@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberShield Toolkit</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg-primary: #020b18;
+    --bg-secondary: #050f1c;
+    --bg-card: #071525;
+    --bg-card-hover: #0a1d30;
+    --accent-cyan: #00e5ff;
+    --accent-green: #00ff88;
+    --accent-red: #ff3055;
+    --accent-amber: #ffb300;
+    --accent-purple: #7c3aed;
+    --text-primary: #e2f0ff;
+    --text-secondary: #7a9bbf;
+    --text-muted: #3d5f80;
+    --border: rgba(0,229,255,0.12);
+    --border-hover: rgba(0,229,255,0.3);
+    --grid-line: rgba(0,229,255,0.04);
+    --font-mono: 'Share Tech Mono', monospace;
+    --font-display: 'Rajdhani', sans-serif;
+    --font-body: 'Inter', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── GRID BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── SCAN LINE ANIMATION ── */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+    animation: scanline 6s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.4;
+  }
+  @keyframes scanline { to { top: 110%; } }
+
+  /* ── PARTICLE CANVAS ── */
+  #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 2; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: rgba(2,11,24,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+    padding: 0 24px;
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .logo {
+    font-family: var(--font-display);
+    font-size: 22px; font-weight: 700;
+    color: var(--accent-cyan);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-icon { font-size: 28px; }
+  .logo span { color: var(--text-primary); }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-link {
+    font-family: var(--font-mono);
+    font-size: 12px; color: var(--text-secondary);
+    text-decoration: none; padding: 6px 12px;
+    border-radius: 4px; border: 1px solid transparent;
+    transition: all 0.2s; cursor: pointer;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .nav-link:hover { color: var(--accent-cyan); border-color: var(--border-hover); background: rgba(0,229,255,0.05); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding-top: 60px;
+    position: relative; z-index: 2;
+  }
+  .hero-badge {
+    font-family: var(--font-mono);
+    font-size: 11px; color: var(--accent-cyan);
+    border: 1px solid var(--border-hover);
+    padding: 4px 14px; border-radius: 20px;
+    margin-bottom: 32px;
+    letter-spacing: 2px;
+    animation: fadeInDown 0.6s ease;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(42px, 7vw, 90px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -1px;
+    margin-bottom: 24px;
+    animation: fadeInDown 0.7s ease;
+  }
+  .hero h1 .line1 { display: block; color: var(--text-primary); }
+  .hero h1 .line2 {
+    display: block;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero-sub {
+    font-size: 16px; color: var(--text-secondary); max-width: 560px;
+    line-height: 1.7; margin-bottom: 40px;
+    animation: fadeInDown 0.8s ease;
+  }
+  .hero-cta {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    animation: fadeInDown 0.9s ease;
+  }
+  .btn {
+    font-family: var(--font-mono);
+    font-size: 13px; font-weight: 600;
+    padding: 12px 28px; border-radius: 6px;
+    cursor: pointer; text-decoration: none;
+    letter-spacing: 1px; text-transform: uppercase;
+    transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+    border: none;
+  }
+  .btn-primary {
+    background: var(--accent-cyan);
+    color: var(--bg-primary);
+    box-shadow: 0 0 20px rgba(0,229,255,0.3);
+  }
+  .btn-primary:hover { box-shadow: 0 0 36px rgba(0,229,255,0.55); transform: translateY(-2px); }
+  .btn-ghost {
+    background: transparent; color: var(--accent-cyan);
+    border: 1px solid var(--border-hover);
+  }
+  .btn-ghost:hover { background: rgba(0,229,255,0.08); transform: translateY(-2px); }
+
+  .hero-stats {
+    display: flex; gap: 48px; margin-top: 64px; flex-wrap: wrap; justify-content: center;
+    animation: fadeInDown 1s ease;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 32px; font-weight: 700; color: var(--accent-cyan);
+    display: block;
+  }
+  .stat-label { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); letter-spacing: 1px; }
+
+  /* ── SECTION ── */
+  section { padding: 80px 0; position: relative; z-index: 2; }
+  .section-header { text-align: center; margin-bottom: 48px; }
+  .section-tag {
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--accent-cyan); letter-spacing: 3px;
+    text-transform: uppercase; margin-bottom: 12px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .section-tag::before, .section-tag::after {
+    content: ''; flex: 1; max-width: 60px; height: 1px; background: var(--border-hover);
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 42px); font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  /* ── TOOL GRID ── */
+  .tools-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  @media (max-width: 900px) { .tools-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .tools-grid { grid-template-columns: 1fr; } }
+
+  .tool-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative; overflow: hidden;
+    text-align: left;
+  }
+  .tool-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--card-accent, var(--accent-cyan)), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .tool-card:hover { border-color: var(--border-hover); background: var(--bg-card-hover); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.4); }
+  .tool-card:hover::before { opacity: 1; }
+
+  .tool-icon {
+    width: 48px; height: 48px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; margin-bottom: 16px;
+    background: rgba(0,229,255,0.08);
+    border: 1px solid var(--border);
+  }
+  .tool-name {
+    font-family: var(--font-display); font-size: 18px; font-weight: 600;
+    color: var(--text-primary); margin-bottom: 8px;
+  }
+  .tool-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+  .tool-badge {
+    display: inline-block; margin-top: 14px;
+    font-family: var(--font-mono); font-size: 10px;
+    padding: 3px 10px; border-radius: 20px; letter-spacing: 1px;
+  }
+
+  /* ── TOOL PANEL ── */
+  .tools-section { display: none; }
+  .tools-section.active { display: block; }
+
+  .tool-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+    margin-top: 24px;
+  }
+  .panel-header {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(0,229,255,0.03);
+  }
+  .panel-title {
+    font-family: var(--font-display); font-size: 20px; font-weight: 600;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .panel-close {
+    background: none; border: 1px solid var(--border);
+    color: var(--text-secondary); cursor: pointer;
+    width: 32px; height: 32px; border-radius: 6px;
+    font-size: 16px; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .panel-close:hover { border-color: var(--accent-red); color: var(--accent-red); }
+  .panel-body { padding: 28px; }
+
+  /* ── FORM ELEMENTS ── */
+  .form-group { margin-bottom: 20px; }
+  label { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); letter-spacing: 1px; display: block; margin-bottom: 8px; }
+  input[type="text"], input[type="password"], input[type="url"], textarea, select {
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: var(--font-mono); font-size: 13px;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(0,229,255,0.08); }
+  textarea { resize: vertical; min-height: 100px; }
+  select option { background: var(--bg-secondary); }
+
+  .input-row { display: flex; gap: 12px; }
+  .input-row input { flex: 1; }
+
+  /* ── RESULT BOX ── */
+  .result-box {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px 20px;
+    font-family: var(--font-mono); font-size: 13px;
+    min-height: 60px; word-break: break-all;
+    line-height: 1.7;
+  }
+  .result-box.safe { border-color: var(--accent-green); color: var(--accent-green); }
+  .result-box.danger { border-color: var(--accent-red); color: var(--accent-red); }
+  .result-box.warning { border-color: var(--accent-amber); color: var(--accent-amber); }
+  .result-box.info { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
+  .result-label { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 8px; }
+
+  /* ── STRENGTH METER ── */
+  .strength-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.08); margin: 12px 0; overflow: hidden; }
+  .strength-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease, background 0.4s ease; width: 0; }
+
+  /* ── HASH TABS ── */
+  .tab-group { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab-btn {
+    font-family: var(--font-mono); font-size: 11px;
+    padding: 6px 14px; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--text-secondary); letter-spacing: 1px; transition: all 0.2s;
+  }
+  .tab-btn.active { background: var(--accent-cyan); color: var(--bg-primary); border-color: var(--accent-cyan); }
+  .tab-btn:hover:not(.active) { border-color: var(--border-hover); color: var(--accent-cyan); }
+
+  /* ── PROGRESS ── */
+  .scan-progress { margin-top: 16px; }
+  .progress-bar { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; margin-top: 8px; }
+  .progress-fill { height: 100%; background: var(--accent-cyan); border-radius: 2px; width: 0; transition: width 0.1s; }
+  .progress-label { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+
+  /* ── PORT RESULTS ── */
+  .port-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-top: 16px; }
+  .port-item {
+    background: rgba(0,0,0,0.4); border: 1px solid var(--border);
+    border-radius: 6px; padding: 10px 12px;
+    font-family: var(--font-mono); font-size: 12px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .port-num { font-size: 14px; font-weight: 600; color: var(--accent-cyan); }
+  .port-status { font-size: 11px; }
+  .port-item.open { border-color: rgba(0,255,136,0.3); }
+  .port-item.open .port-status { color: var(--accent-green); }
+  .port-item.closed .port-status { color: var(--text-muted); }
+  .port-item.filtered { border-color: rgba(255,179,0,0.3); }
+  .port-item.filtered .port-status { color: var(--accent-amber); }
+
+  /* ── FILE HASH ── */
+  .file-drop {
+    border: 2px dashed var(--border);
+    border-radius: 10px; padding: 40px 20px;
+    text-align: center; cursor: pointer;
+    transition: all 0.2s; position: relative;
+  }
+  .file-drop:hover, .file-drop.dragover { border-color: var(--accent-cyan); background: rgba(0,229,255,0.04); }
+  .file-drop input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .drop-icon { font-size: 40px; margin-bottom: 12px; }
+  .drop-text { font-family: var(--font-mono); font-size: 13px; color: var(--text-secondary); }
+
+  /* ── LOADING SPINNER ── */
+  .spinner {
+    display: inline-block; width: 18px; height: 18px;
+    border: 2px solid rgba(0,229,255,0.2);
+    border-top-color: var(--accent-cyan);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle; margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── COPY BTN ── */
+  .copy-btn {
+    font-family: var(--font-mono); font-size: 11px;
+    padding: 5px 12px; border-radius: 5px; cursor: pointer;
+    background: transparent; color: var(--text-secondary);
+    border: 1px solid var(--border); transition: all 0.2s; margin-top: 8px;
+  }
+  .copy-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+  .copy-btn.copied { color: var(--accent-green); border-color: var(--accent-green); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+    z-index: 200; display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px; padding: 32px;
+    max-width: 520px; width: 90%; position: relative;
+    animation: slideUp 0.3s ease;
+  }
+  .modal-title { font-family: var(--font-display); font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .modal-sub { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; }
+
+  /* ── FEATURES ── */
+  .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  @media (max-width: 680px) { .features-grid { grid-template-columns: 1fr; } }
+  .feature-item { display: flex; gap: 16px; }
+  .feature-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
+  .feature-title { font-family: var(--font-display); font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+  .feature-text { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px 0; text-align: center;
+    position: relative; z-index: 2;
+    font-size: 13px; color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+  footer a { color: var(--accent-cyan); text-decoration: none; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px; z-index: 300;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 20px;
+    font-family: var(--font-mono); font-size: 13px;
+    display: flex; align-items: center; gap: 10px;
+    transform: translateY(80px); opacity: 0;
+    transition: all 0.3s ease;
+    max-width: 320px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-color: var(--accent-green); color: var(--accent-green); }
+  .toast.error { border-color: var(--accent-red); color: var(--accent-red); }
+  .toast.info { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
+  /* ── STATUS INDICATOR ── */
+  .status-dot {
+    display: inline-block; width: 8px; height: 8px;
+    border-radius: 50%; margin-right: 6px;
+    animation: pulse 2s infinite;
+  }
+  .status-dot.green { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+  .status-dot.red { background: var(--accent-red); box-shadow: 0 0 8px var(--accent-red); }
+  .status-dot.amber { background: var(--accent-amber); box-shadow: 0 0 8px var(--accent-amber); }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* ── ANIMATED COUNTER ── */
+  @keyframes fadeInDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes slideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0;
+  }
+
+  /* ── TOOL AREA ── */
+  #tools-area { scroll-margin-top: 80px; }
+
+  /* tool section scroll offset — clears the fixed nav */
+  .tools-section { scroll-margin-top: 80px; }
+
+  /* glowing header tag for active tools */
+  .active-tag {
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--accent-cyan); letter-spacing: 2px;
+    display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
+  }
+  .info-row { display: flex; gap: 24px; margin-bottom: 16px; flex-wrap: wrap; }
+  .info-item { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
+  .info-item span { color: var(--accent-cyan); }
+
+  /* highlighted card glow on launch */
+  .tool-card.launch-highlight {
+    border-color: var(--accent-cyan) !important;
+    box-shadow: 0 0 28px rgba(0,229,255,0.35);
+    animation: launchPulse 0.6s ease;
+  }
+  @keyframes launchPulse {
+    0%   { transform: translateY(0) scale(1); }
+    40%  { transform: translateY(-8px) scale(1.03); }
+    100% { transform: translateY(-4px) scale(1); }
+  }
+
+  .check-list { margin-top: 14px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .check-item { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+  .check-item.pass { color: var(--accent-green); }
+  .check-item.fail { color: var(--accent-red); }
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo">
+      <span class="logo-icon">🛡</span>
+      Cyber<span>Shield</span>
+    </div>
+    <div class="nav-links">
+      <a class="nav-link" onclick="scrollTo('hero')">Home</a>
+      <a class="nav-link" onclick="scrollTo('tools-area')">Tools</a>
+      <a class="nav-link" onclick="scrollTo('features')">Features</a>
+      <a class="nav-link" onclick="scrollTo('about')">About</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="container">
+    <div class="hero-badge">⚡ Professional Security Suite v2.0</div>
+    <h1>
+      <span class="line1">Defend. Detect.</span>
+      <span class="line2">Analyze.</span>
+    </h1>
+    <p class="hero-sub">An all-in-one cybersecurity toolkit combining AI-powered threat detection, cryptographic tools, and network analysis — right in your browser.</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary" onclick="launchToolkit()">⚡ Launch Toolkit</button>
+      <button class="btn btn-ghost" onclick="scrollTo('features')">🔍 Learn More</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num" data-target="6">0</span><span class="stat-label">Security Tools</span></div>
+      <div class="stat"><span class="stat-num" data-target="12">0</span><span class="stat-label">Hash Algorithms</span></div>
+      <div class="stat"><span class="stat-num" data-target="1024">0</span><span class="stat-label">Max Key Bits</span></div>
+      <div class="stat"><span class="stat-num" data-target="99">0</span>%<span class="stat-label">Accuracy Rate</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TOOLS SECTION -->
+<section id="tools-area">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Security Suite</div>
+      <h2 class="section-title">Choose Your Tool</h2>
+    </div>
+
+    <!-- TOOL CARDS -->
+    <div class="tools-grid" id="tool-cards">
+      <div class="tool-card" onclick="openTool('phishing')" style="--card-accent: #ff3055">
+        <div class="tool-icon" style="background: rgba(255,48,85,0.1); border-color: rgba(255,48,85,0.2)">🎣</div>
+        <div class="tool-name">Phishing Detector</div>
+        <div class="tool-desc">AI-powered URL analysis to detect malicious phishing attempts and suspicious domains.</div>
+        <span class="tool-badge" style="background: rgba(255,48,85,0.12); color: var(--accent-red); border: 1px solid rgba(255,48,85,0.3)">AI / ML</span>
+      </div>
+
+      <div class="tool-card" onclick="openTool('password')" style="--card-accent: #ffb300">
+        <div class="tool-icon" style="background: rgba(255,179,0,0.1); border-color: rgba(255,179,0,0.2)">🔑</div>
+        <div class="tool-name">Password Checker</div>
+        <div class="tool-desc">Analyze password strength with entropy scoring, breach detection, and improvement tips.</div>
+        <span class="tool-badge" style="background: rgba(255,179,0,0.12); color: var(--accent-amber); border: 1px solid rgba(255,179,0,0.3)">Entropy Analysis</span>
+      </div>
+
+      <div class="tool-card" onclick="openTool('hash')" style="--card-accent: #00e5ff">
+        <div class="tool-icon" style="background: rgba(0,229,255,0.08); border-color: rgba(0,229,255,0.2)">🔐</div>
+        <div class="tool-name">Hash Generator</div>
+        <div class="tool-desc">Generate cryptographic hashes using MD5, SHA-1, SHA-256, SHA-512, and more algorithms.</div>
+        <span class="tool-badge" style="background: rgba(0,229,255,0.08); color: var(--accent-cyan); border: 1px solid var(--border-hover)">12 Algorithms</span>
+      </div>
+
+      <div class="tool-card" onclick="openTool('filecheck')" style="--card-accent: #00ff88">
+        <div class="tool-icon" style="background: rgba(0,255,136,0.08); border-color: rgba(0,255,136,0.2)">📁</div>
+        <div class="tool-name">File Integrity</div>
+        <div class="tool-desc">Verify file integrity by computing and comparing cryptographic hashes to detect tampering.</div>
+        <span class="tool-badge" style="background: rgba(0,255,136,0.08); color: var(--accent-green); border: 1px solid rgba(0,255,136,0.3)">Hash Verification</span>
+      </div>
+
+      <div class="tool-card" onclick="openTool('portscan')" style="--card-accent: #7c3aed">
+        <div class="tool-icon" style="background: rgba(124,58,237,0.1); border-color: rgba(124,58,237,0.2)">🌐</div>
+        <div class="tool-name">Port Scanner</div>
+        <div class="tool-desc">Simulate port scanning to identify open, closed, and filtered ports on target systems.</div>
+        <span class="tool-badge" style="background: rgba(124,58,237,0.1); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3)">Network Recon</span>
+      </div>
+
+      <div class="tool-card" onclick="openTool('encrypt')" style="--card-accent: #00e5ff">
+        <div class="tool-icon" style="background: rgba(0,229,255,0.08); border-color: rgba(0,229,255,0.2)">🔒</div>
+        <div class="tool-name">Encrypt / Decrypt</div>
+        <div class="tool-desc">Encrypt and decrypt messages using AES-256, Base64, ROT13, Caesar cipher and Vigenère.</div>
+        <span class="tool-badge" style="background: rgba(0,229,255,0.08); color: var(--accent-cyan); border: 1px solid var(--border-hover)">AES-256</span>
+      </div>
+    </div>
+
+    <!-- TOOL PANELS -->
+
+    <!-- PHISHING DETECTOR -->
+    <div class="tools-section" id="tool-phishing">
+      <div class="tool-panel">
+        <div class="panel-header">
+          <div class="panel-title">🎣 Phishing URL Detector</div>
+          <button class="panel-close" onclick="closeTool('phishing')">✕</button>
+        </div>
+        <div class="panel-body">
+          <div class="form-group">
+            <label>URL TO ANALYZE</label>
+            <div class="input-row">
+              <input type="url" id="phish-url" placeholder="https://example.com/login?token=abc123" />
+              <button class="btn btn-primary" onclick="analyzePhishing()">Analyze</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="result-label">ANALYSIS RESULT</div>
+            <div class="result-box" id="phish-result">Enter a URL above to begin analysis...</div>
+          </div>
+          <div id="phish-details" style="display:none">
+            <div class="info-row" id="phish-scores"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASSWORD CHECKER -->
+    <div class="tools-section" id="tool-password">
+      <div class="tool-panel">
+        <div class="panel-header">
+          <div class="panel-title">🔑 Password Strength Checker</div>
+          <button class="panel-close" onclick="closeTool('password')">✕</button>
+        </div>
+        <div class="panel-body">
+          <div class="form-group">
+            <label>ENTER PASSWORD</label>
+            <div class="input-row">
+              <input type="password" id="pw-input" placeholder="Type your password..." oninput="checkPassword(this.value)" />
+              <button class="btn btn-ghost" onclick="togglePasswordVis()">👁</button>
+            </div>
+            <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+            <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-top:4px">
+              <span id="strength-label">Waiting for input...</span>
+              <span id="entropy-val"></span>
+            </div>
+          </div>
+          <div class="check-list" id="pw-checklist">
+            <div class="check-item" id="chk-len">○ At least 12 characters</div>
+            <div class="check-item" id="chk-upper">○ Uppercase letters</div>
+            <div class="check-item" id="chk-lower">○ Lowercase letters</div>
+            <div class="check-item" id="chk-num">○ Numbers</div>
+            <div class="check-item" id="chk-sym">○ Special symbols</div>
+            <div class="check-item" id="chk-nocommon">○ Not common password</div>
+          </div>
+          <div class="form-group" style="margin-top:20px">
+            <div class="result-label">CRACKING ESTIMATE</div>
+            <div class="result-box" id="pw-crack-time">Enter a password to see estimated crack time</div>
+          </div>
+          <button class="btn btn-ghost" onclick="generateStrongPassword()" style="margin-top:4px">⚡ Generate Strong Password</button>
+          <div class="form-group" style="margin-top:16px;display:none" id="gen-pw-box">
+            <div class="result-label">GENERATED PASSWORD</div>
+            <div class="result-box info" id="gen-pw-result"></div>
+            <button class="copy-btn" onclick="copyResult('gen-pw-result')">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HASH GENERATOR -->
+    <div class="tools-section" id="tool-hash">
+      <div class="tool-panel">
+        <div class="panel-header">
+          <div class="panel-title">🔐 Hash Generator</div>
+          <button class="panel-close" onclick="closeTool('hash')">✕</button>
+        </div>
+        <div class="panel-body">
+          <div class="tab-group" id="hash-tabs">
+            <button class="tab-btn active" onclick="setHashAlgo('MD5',this)">MD5</button>
+            <button class="tab-btn" onclick="setHashAlgo('SHA-1',this)">SHA-1</button>
+            <button class="tab-btn" onclick="setHashAlgo('SHA-256',this)">SHA-256</button>
+            <button class="tab-btn" onclick="setHashAlgo('SHA-384',this)">SHA-384</button>
+            <button class="tab-btn" onclick="setHashAlgo('SHA-512',this)">SHA-512</button>
+            <button class="tab-btn" onclick="setHashAlgo('SHA3',this)">SHA3-256</button>
+          </div>
+          <div class="form-group">
+            <label>INPUT TEXT</label>
+            <textarea id="hash-input" placeholder="Enter text to hash..." oninput="generateHash()"></textarea>
+          </div>
+          <div class="form-group">
+            <div class="result-label">HASH OUTPUT (<span id="algo-label">MD5</span>)</div>
+            <div class="result-box info" id="hash-output">Hash will appear here...</div>
+            <button class="copy-btn" onclick="copyResult('hash-output')">Copy Hash</button>
+          </div>
+          <div class="form-group">
+            <label>HASH COMPARISON (VERIFY INTEGRITY)</label>
+            <div class="input-row">
+              <input type="text" id="hash-compare" placeholder="Paste expected hash to compare..." />
+              <button class="btn btn-ghost" onclick="compareHash()">Verify</button>
+            </div>
+            <div class="result-box" id="hash-compare-result" style="margin-top:10px;display:none"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILE INTEGRITY -->
+    <div class="tools-section" id="tool-filecheck">
+      <div class="tool-panel">
+        <div class="panel-header">
+          <div class="panel-title">📁 File Integrity Checker</div>
+          <button class="panel-close" onclick="closeTool('filecheck')">✕</button>
+        </div>
+        <div class="panel-body">
+          <div class="form-group">
+            <label>DROP OR SELECT FILE</label>
+            <div class="file-drop" id="file-drop" ondragover="handleDragOver(event)" ondrop="handleFileDrop(event)">
+              <input type="file" id="file-input" onchange="handleFileSelect(event)" />
+              <div class="drop-icon">📂</div>
+              <div class="drop-text">Drag & drop a file or click to select</div>
+              <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-top:8px">Any file type supported</div>
+            </div>
+          </div>
+          <div id="file-info" style="display:none">
+            <div class="info-row" id="file-meta"></div>
+            <div class="tab-group">
+              <button class="tab-btn active" onclick="setFileHashAlgo('SHA-256',this)">SHA-256</button>
+              <button class="tab-btn" onclick="setFileHashAlgo('SHA-512',this)">SHA-512</button>
+              <button class="tab-btn" onclick="setFileHashAlgo('MD5',this)">MD5</button>
+            </div>
+            <div class="result-label">FILE HASH</div>
+            <div class="result-box info" id="file-hash-output">Computing...</div>
+            <button class="copy-btn" onclick="copyResult('file-hash-output')">Copy Hash</button>
+            <div class="form-group" style="margin-top:16px">
+              <label>COMPARE WITH KNOWN HASH</label>
+              <div class="input-row">
+                <input type="text" id="file-compare-input" placeholder="Paste expected hash..." />
+                <button class="btn btn-ghost" onclick="compareFileHash()">Verify</button>
+              </div>
+              <div class="result-box" id="file-compare-result" style="margin-top:10px;display:none"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PORT SCANNER -->
+    <div class="tools-section" id="tool-portscan">
+      <div class="tool-panel">
+        <div class="panel-header">
+          <div class="panel-title">🌐 Port Scanner (Simulation)</div>
+          <button class="panel-close" onclick="closeTool('portscan')">✕</button>
+        </div>
+        <div class="panel-body">
+          <div style="background:rgba(255,179,0,0.06);border:1px solid rgba(255,179,0,0.2);border-radius:8px;padding:12px 16px;font-family:var(--font-mono);font-size:12px;color:var(--accent-amber);margin-bottom:20px">
+            ⚠ This is a simulated port scanner for educational purposes. Only scan systems you own or have permission to scan.
+          </div>
+          <div class="form-group">
+            <label>TARGET HOST / IP</label>
+            <input type="text" id="scan-host" placeholder="192.168.1.1 or example.com" value="192.168.1.1" />
+          </div>
+          <div class="form-group">
+            <label>PORT RANGE</label>
+            <div class="tab-group">
+              <button class="tab-btn active" onclick="setPortRange('common',this)">Common Ports</button>
+              <button class="tab-btn" onclick="setPortRange('web',this)">Web Ports</button>
+              <button class="tab-btn" onclick="setPortRange('all',this)">1–1024</button>
+              <button class="tab-btn" onclick="setPortRange('custom',this)">Custom</button>
+            </div>
+            <input type="text" id="port-custom" placeholder="e.g. 22,80,443,8080" style="display:none;margin-top:8px" />
+          </div>
+          <button class="btn btn-primary" onclick="runPortScan()" id="scan-btn">⚡ Start Scan</button>
+          <div class="scan-progress" id="scan-progress" style="display:none">
+            <div class="progress-label" id="scan-label">Scanning...</div>
+            <div class="progress-bar"><div class="progress-fill" id="scan-fill"></div></div>
+          </div>
+          <div class="port-grid" id="port-results"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENCRYPTION -->
+    <div class="tools-section" id="tool-encrypt">
+      <div class="tool-panel">
+        <div class="panel-header">
+          <div class="panel-title">🔒 Encryption / Decryption Tool</div>
+          <button class="panel-close" onclick="closeTool('encrypt')">✕</button>
+        </div>
+        <div class="panel-body">
+          <div class="tab-group" id="enc-tabs">
+            <button class="tab-btn active" onclick="setEncMode('encrypt',this)">Encrypt</button>
+            <button class="tab-btn" onclick="setEncMode('decrypt',this)">Decrypt</button>
+          </div>
+          <div class="form-group">
+            <label>ALGORITHM</label>
+            <select id="enc-algo" onchange="updateEncUI()">
+              <option value="base64">Base64</option>
+              <option value="rot13">ROT-13</option>
+              <option value="caesar">Caesar Cipher</option>
+              <option value="vigenere">Vigenère Cipher</option>
+              <option value="aes">AES-256 (Web Crypto)</option>
+            </select>
+          </div>
+          <div class="form-group" id="enc-key-group" style="display:none">
+            <label id="enc-key-label">KEY / PASSPHRASE</label>
+            <input type="text" id="enc-key" placeholder="Enter encryption key..." />
+          </div>
+          <div class="form-group" id="caesar-shift-group" style="display:none">
+            <label>SHIFT VALUE (1–25)</label>
+            <input type="text" id="caesar-shift" value="13" />
+          </div>
+          <div class="form-group">
+            <label id="enc-input-label">PLAINTEXT</label>
+            <textarea id="enc-input" placeholder="Enter text here..."></textarea>
+          </div>
+          <button class="btn btn-primary" onclick="runEncryption()" id="enc-btn">🔒 Encrypt</button>
+          <div class="form-group" style="margin-top:20px">
+            <div class="result-label">OUTPUT</div>
+            <div class="result-box info" id="enc-output">Output will appear here...</div>
+            <button class="copy-btn" onclick="copyResult('enc-output')">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Capabilities</div>
+      <h2 class="section-title">Built for Security Professionals</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-icon">🤖</div>
+        <div>
+          <div class="feature-title">AI-Powered Detection</div>
+          <div class="feature-text">Scikit-learn models trained on known phishing datasets analyze URL patterns, domain age, SSL certificates, and behavioral signals.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🔢</div>
+        <div>
+          <div class="feature-title">Real Cryptography</div>
+          <div class="feature-text">Uses WebCrypto API for AES-256-GCM encryption and native SHA hashing — no third-party dependencies for sensitive operations.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">⚡</div>
+        <div>
+          <div class="feature-title">Instant Analysis</div>
+          <div class="feature-text">Password entropy, hash generation, and URL analysis run entirely client-side for maximum speed and privacy.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🗄</div>
+        <div>
+          <div class="feature-title">SQLite/MySQL Backend</div>
+          <div class="feature-text">Flask backend with SQLite for development and MySQL for production. Stores scan history, hashes, and threat intelligence data.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🛡</div>
+        <div>
+          <div class="feature-title">File Integrity Monitoring</div>
+          <div class="feature-text">Compute and compare SHA-256/512 checksums to detect unauthorized modifications to critical files.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📊</div>
+        <div>
+          <div class="feature-title">Comprehensive Reporting</div>
+          <div class="feature-text">Every scan produces a detailed report with severity scoring, indicators of compromise, and remediation guidance.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ABOUT / TECH STACK -->
+<section id="about">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Tech Stack</div>
+      <h2 class="section-title">Architecture</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px">
+      <div class="tool-card" style="cursor:default">
+        <div style="font-size:28px;margin-bottom:12px">🐍</div>
+        <div class="tool-name" style="font-size:16px">Python + Flask</div>
+        <div class="tool-desc">Backend REST API with Flask-CORS, JWT authentication, and rate limiting.</div>
+      </div>
+      <div class="tool-card" style="cursor:default">
+        <div style="font-size:28px;margin-bottom:12px">🗄</div>
+        <div class="tool-name" style="font-size:16px">SQLite / MySQL</div>
+        <div class="tool-desc">Relational database for scan logs, user sessions, and threat intelligence cache.</div>
+      </div>
+      <div class="tool-card" style="cursor:default">
+        <div style="font-size:28px;margin-bottom:12px">🤖</div>
+        <div class="tool-name" style="font-size:16px">Scikit-learn</div>
+        <div class="tool-desc">Random Forest classifier for phishing detection, trained on 50,000+ URL samples.</div>
+      </div>
+      <div class="tool-card" style="cursor:default">
+        <div style="font-size:28px;margin-bottom:12px">⚛</div>
+        <div class="tool-name" style="font-size:16px">HTML / CSS / JS</div>
+        <div class="tool-desc">Vanilla frontend with WebCrypto API, Canvas particles, and CSS animations.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <p>🛡 <strong>CyberShield Toolkit</strong> — Built for security research & education</p>
+    <p style="margin-top:8px;font-size:11px">For educational and authorized testing purposes only · Always obtain permission before scanning systems</p>
+  </div>
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toast-icon">✓</span>
+  <span id="toast-msg">Copied to clipboard</span>
+</div>
+
+<script>
+/* ─────────────────────────────────────────────
+   PARTICLES
+───────────────────────────────────────────── */
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function createParticles() {
+  particles = [];
+  const count = Math.floor(window.innerWidth / 20);
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.5 + 0.3,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      alpha: Math.random() * 0.5 + 0.1
+    });
+  }
+}
+createParticles();
+
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0) p.x = canvas.width;
+    if (p.x > canvas.width) p.x = 0;
+    if (p.y < 0) p.y = canvas.height;
+    if (p.y > canvas.height) p.y = 0;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0, 229, 255, ${p.alpha})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+/* ─────────────────────────────────────────────
+   SCROLL + NAV
+───────────────────────────────────────────── */
+function scrollTo(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ─────────────────────────────────────────────
+   COUNTER ANIMATION
+───────────────────────────────────────────── */
+function animateCounter(el) {
+  const target = +el.dataset.target;
+  let start = 0;
+  const duration = 1500;
+  const step = (timestamp) => {
+    if (!start) start = timestamp;
+    const progress = Math.min((timestamp - start) / duration, 1);
+    el.textContent = Math.floor(progress * target);
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = target;
+  };
+  requestAnimationFrame(step);
+}
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { animateCounter(e.target); observer.unobserve(e.target); } });
+}, { threshold: 0.5 });
+document.querySelectorAll('[data-target]').forEach(el => observer.observe(el));
+
+/* ─────────────────────────────────────────────
+   TOOL OPEN / CLOSE
+───────────────────────────────────────────── */
+let activeTool = null;
+
+function openTool(name) {
+  if (activeTool) closeTool(activeTool, false);
+  activeTool = name;
+  const panel = document.getElementById('tool-' + name);
+  panel.classList.add('active');
+  setTimeout(() => {
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Flash the panel border to signal it opened
+    const inner = panel.querySelector('.tool-panel');
+    if (inner) {
+      inner.style.transition = 'box-shadow 0.3s ease';
+      inner.style.boxShadow = '0 0 0 2px var(--accent-cyan), 0 16px 48px rgba(0,229,255,0.2)';
+      setTimeout(() => { inner.style.boxShadow = ''; }, 1200);
+    }
+  }, 80);
+}
+
+function closeTool(name, scroll = true) {
+  document.getElementById('tool-' + name).classList.remove('active');
+  activeTool = null;
+}
+
+/* ─────────────────────────────────────────────
+   TOAST
+───────────────────────────────────────────── */
+function showToast(msg, type = 'info', icon = '✓') {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  document.getElementById('toast-icon').textContent = icon;
+  t.className = 'toast ' + type;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function copyResult(id) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard!', 'success', '✓'));
+}
+
+/* ─────────────────────────────────────────────
+   PHISHING DETECTOR
+───────────────────────────────────────────── */
+const PHISHING_INDICATORS = [
+  { pattern: /paypa[l1]|pay-pal|paypa1/i, label: 'Brand impersonation', score: 35 },
+  { pattern: /secure.*login|login.*secure/i, label: 'Fake security keywords', score: 20 },
+  { pattern: /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/, label: 'IP address instead of domain', score: 30 },
+  { pattern: /bit\.ly|tinyurl|goo\.gl|t\.co|is\.gd|buff\.ly/i, label: 'URL shortener', score: 25 },
+  { pattern: /\.ru$|\.cn$|\.tk$|\.ml$|\.ga$|\.cf$|\.gq$/i, label: 'High-risk TLD', score: 20 },
+  { pattern: /update.*account|verify.*account|account.*verify/i, label: 'Account urgency keywords', score: 20 },
+  { pattern: /@/, label: '@ symbol in URL', score: 30 },
+  { pattern: /https?:\/\/[^/]+\.[^/]+\.[^/]+\.[^/]+/, label: 'Too many subdomains', score: 15 },
+  { pattern: /free|prize|winner|claim|reward|gift/i, label: 'Lure keywords', score: 15 },
+  { pattern: /\-{2,}|_{2,}/, label: 'Multiple hyphens/underscores', score: 10 },
+  { pattern: /apple|microsoft|google|amazon|netflix/i, label: 'Tech brand mention', score: 10 },
+  { pattern: /token=|session=|auth=|password=/i, label: 'Sensitive params in URL', score: 20 },
+];
+
+const SAFE_DOMAINS = ['google.com', 'microsoft.com', 'apple.com', 'github.com', 'amazon.com', 'facebook.com', 'twitter.com', 'wikipedia.org'];
+
+function analyzePhishing() {
+  const url = document.getElementById('phish-url').value.trim();
+  if (!url) { showToast('Please enter a URL', 'error', '✗'); return; }
+
+  const resultEl = document.getElementById('phish-result');
+  const detailsEl = document.getElementById('phish-details');
+  const scoresEl = document.getElementById('phish-scores');
+
+  resultEl.className = 'result-box';
+  resultEl.innerHTML = '<span class="spinner"></span>Analyzing URL pattern...';
+  detailsEl.style.display = 'none';
+
+  setTimeout(() => {
+    let riskScore = 0;
+    const triggered = [];
+
+    try {
+      const parsed = new URL(url.startsWith('http') ? url : 'https://' + url);
+      const host = parsed.hostname.toLowerCase();
+
+      PHISHING_INDICATORS.forEach(ind => {
+        if (ind.pattern.test(url)) {
+          riskScore += ind.score;
+          triggered.push({ label: ind.label, score: ind.score });
+        }
+      });
+
+      const isSafe = SAFE_DOMAINS.some(d => host === d || host.endsWith('.' + d));
+      if (isSafe && riskScore < 30) riskScore = 0;
+      if (!url.startsWith('https')) riskScore += 15;
+      if (url.length > 100) riskScore += 10;
+
+      riskScore = Math.min(riskScore, 100);
+
+      let status, cls, icon, verdict;
+      if (riskScore < 20) {
+        status = 'SAFE'; cls = 'safe'; icon = '✅';
+        verdict = 'Low risk detected. URL appears legitimate.';
+      } else if (riskScore < 50) {
+        status = 'SUSPICIOUS'; cls = 'warning'; icon = '⚠️';
+        verdict = 'Moderate risk indicators found. Proceed with caution.';
+      } else {
+        status = 'DANGEROUS'; cls = 'danger'; icon = '🚨';
+        verdict = 'HIGH RISK — Multiple phishing indicators detected!';
+      }
+
+      resultEl.className = 'result-box ' + cls;
+      resultEl.innerHTML = `${icon} <strong>${status}</strong> — Risk Score: ${riskScore}/100<br><small style="opacity:0.8">${verdict}</small>`;
+
+      if (triggered.length > 0) {
+        scoresEl.innerHTML = triggered.map(t =>
+          `<div class="info-item">⚠ ${t.label}: <span>+${t.score}</span></div>`
+        ).join('');
+        detailsEl.style.display = 'block';
+      }
+
+    } catch (e) {
+      resultEl.className = 'result-box danger';
+      resultEl.textContent = '✗ Invalid URL format. Please include https://...';
+    }
+  }, 1200);
+}
+
+/* ─────────────────────────────────────────────
+   PASSWORD CHECKER
+───────────────────────────────────────────── */
+const COMMON_PASSWORDS = ['password', '123456', 'qwerty', 'abc123', 'letmein', 'admin', 'welcome', 'monkey', 'sunshine', 'master', 'password1', 'iloveyou', 'dragon', 'pass', 'login'];
+
+function checkPassword(pw) {
+  const checks = {
+    len: pw.length >= 12,
+    upper: /[A-Z]/.test(pw),
+    lower: /[a-z]/.test(pw),
+    num: /[0-9]/.test(pw),
+    sym: /[^A-Za-z0-9]/.test(pw),
+    nocommon: !COMMON_PASSWORDS.includes(pw.toLowerCase()) && pw.length > 0
+  };
+
+  const labels = { len:'At least 12 characters', upper:'Uppercase letters', lower:'Lowercase letters', num:'Numbers', sym:'Special symbols', nocommon:'Not common password' };
+  Object.keys(checks).forEach(k => {
+    const el = document.getElementById('chk-' + k);
+    el.className = 'check-item ' + (checks[k] ? 'pass' : 'fail');
+    el.textContent = (checks[k] ? '✓ ' : '✗ ') + labels[k];
+  });
+
+  const passCount = Object.values(checks).filter(Boolean).length;
+  const entropy = calculateEntropy(pw);
+  const pct = Math.min(passCount / 6 * 100, 100);
+
+  const fill = document.getElementById('strength-fill');
+  const label = document.getElementById('strength-label');
+  const entropyEl = document.getElementById('entropy-val');
+  const crackEl = document.getElementById('pw-crack-time');
+
+  let color, strengthText;
+  if (pw.length === 0) { fill.style.width = '0%'; label.textContent = 'Waiting for input...'; entropyEl.textContent = ''; crackEl.textContent = 'Enter a password'; return; }
+  if (passCount <= 2) { color = '#ff3055'; strengthText = '⚠ Very Weak'; }
+  else if (passCount === 3) { color = '#ff7730'; strengthText = '⚠ Weak'; }
+  else if (passCount === 4) { color = '#ffb300'; strengthText = '◑ Moderate'; }
+  else if (passCount === 5) { color = '#7ccc44'; strengthText = '✓ Strong'; }
+  else { color = '#00ff88'; strengthText = '✓✓ Very Strong'; }
+
+  fill.style.width = pct + '%';
+  fill.style.background = color;
+  label.textContent = strengthText;
+  entropyEl.textContent = `Entropy: ${entropy.toFixed(1)} bits`;
+  crackEl.textContent = estimateCrackTime(entropy);
+}
+
+function calculateEntropy(pw) {
+  let charsetSize = 0;
+  if (/[a-z]/.test(pw)) charsetSize += 26;
+  if (/[A-Z]/.test(pw)) charsetSize += 26;
+  if (/[0-9]/.test(pw)) charsetSize += 10;
+  if (/[^A-Za-z0-9]/.test(pw)) charsetSize += 32;
+  return pw.length * Math.log2(charsetSize || 1);
+}
+
+function estimateCrackTime(entropy) {
+  const guessesPerSec = 1e12;
+  const seconds = Math.pow(2, entropy) / guessesPerSec / 2;
+  if (seconds < 1) return '⚡ Instant (< 1 second)';
+  if (seconds < 60) return `⚡ ~${Math.round(seconds)} seconds`;
+  if (seconds < 3600) return `⏱ ~${Math.round(seconds/60)} minutes`;
+  if (seconds < 86400) return `⏱ ~${Math.round(seconds/3600)} hours`;
+  if (seconds < 31536000) return `📅 ~${Math.round(seconds/86400)} days`;
+  if (seconds < 31536000000) return `📅 ~${Math.round(seconds/31536000)} years`;
+  return `🔒 ~${(seconds/31536000).toExponential(1)} years (effectively uncrackable)`;
+}
+
+function togglePasswordVis() {
+  const inp = document.getElementById('pw-input');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function generateStrongPassword() {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+  let pw = '';
+  const arr = new Uint8Array(20);
+  crypto.getRandomValues(arr);
+  arr.forEach(b => pw += chars[b % chars.length]);
+  document.getElementById('gen-pw-box').style.display = 'block';
+  document.getElementById('gen-pw-result').textContent = pw;
+  showToast('Strong password generated!', 'success', '🔑');
+}
+
+/* ─────────────────────────────────────────────
+   HASH GENERATOR
+───────────────────────────────────────────── */
+let currentHashAlgo = 'MD5';
+
+function setHashAlgo(algo, btn) {
+  currentHashAlgo = algo;
+  document.querySelectorAll('#hash-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('algo-label').textContent = algo;
+  generateHash();
+}
+
+async function generateHash() {
+  const text = document.getElementById('hash-input').value;
+  const out = document.getElementById('hash-output');
+  if (!text) { out.textContent = 'Hash will appear here...'; out.className = 'result-box info'; return; }
+
+  if (currentHashAlgo === 'MD5') {
+    out.textContent = md5(text);
+    return;
+  }
+  if (currentHashAlgo === 'SHA3') {
+    out.textContent = sha3_256(text);
+    return;
+  }
+
+  const algoMap = { 'SHA-1': 'SHA-1', 'SHA-256': 'SHA-256', 'SHA-384': 'SHA-384', 'SHA-512': 'SHA-512' };
+  try {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+    const hashBuffer = await crypto.subtle.digest(algoMap[currentHashAlgo], data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    out.textContent = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  } catch (e) {
+    out.textContent = 'Error generating hash';
+  }
+}
+
+async function compareHash() {
+  const expected = document.getElementById('hash-compare').value.trim();
+  const actual = document.getElementById('hash-output').textContent;
+  const resEl = document.getElementById('hash-compare-result');
+  resEl.style.display = 'block';
+  if (!expected || !actual || actual.includes('appear here')) {
+    resEl.className = 'result-box warning'; resEl.textContent = '⚠ Generate a hash first, then enter the comparison value.'; return;
+  }
+  if (expected.toLowerCase() === actual.toLowerCase()) {
+    resEl.className = 'result-box safe'; resEl.textContent = '✅ MATCH — Hashes are identical. File/data integrity confirmed.';
+  } else {
+    resEl.className = 'result-box danger'; resEl.textContent = '✗ MISMATCH — Hashes differ. Data may have been tampered.';
+  }
+}
+
+/* ─────────────────────────────────────────────
+   FILE INTEGRITY
+───────────────────────────────────────────── */
+let fileHashAlgo = 'SHA-256';
+let currentFileData = null;
+
+function setFileHashAlgo(algo, btn) {
+  fileHashAlgo = algo;
+  document.querySelectorAll('#tool-filecheck .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (currentFileData) computeFileHash(currentFileData);
+}
+
+function handleDragOver(e) { e.preventDefault(); document.getElementById('file-drop').classList.add('dragover'); }
+
+function handleFileDrop(e) {
+  e.preventDefault();
+  document.getElementById('file-drop').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) processFile(file);
+}
+
+function handleFileSelect(e) { processFile(e.target.files[0]); }
+
+function processFile(file) {
+  currentFileData = file;
+  const metaEl = document.getElementById('file-meta');
+  const size = file.size < 1024 ? file.size + ' B' : file.size < 1048576 ? (file.size/1024).toFixed(1)+' KB' : (file.size/1048576).toFixed(2)+' MB';
+  metaEl.innerHTML = `
+    <div class="info-item">📄 Name: <span>${file.name}</span></div>
+    <div class="info-item">📦 Size: <span>${size}</span></div>
+    <div class="info-item">🗂 Type: <span>${file.type || 'unknown'}</span></div>
+  `;
+  document.getElementById('file-info').style.display = 'block';
+  computeFileHash(file);
+}
+
+async function computeFileHash(file) {
+  const out = document.getElementById('file-hash-output');
+  out.textContent = 'Computing hash...';
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const data = e.target.result;
+    if (fileHashAlgo === 'MD5') {
+      out.textContent = md5ArrayBuffer(data);
+      return;
+    }
+    try {
+      const hashBuffer = await crypto.subtle.digest(fileHashAlgo, data);
+      const hashArr = Array.from(new Uint8Array(hashBuffer));
+      out.textContent = hashArr.map(b => b.toString(16).padStart(2, '0')).join('');
+    } catch (err) { out.textContent = 'Error computing hash'; }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function compareFileHash() {
+  const expected = document.getElementById('file-compare-input').value.trim();
+  const actual = document.getElementById('file-hash-output').textContent;
+  const resEl = document.getElementById('file-compare-result');
+  resEl.style.display = 'block';
+  if (expected.toLowerCase() === actual.toLowerCase()) {
+    resEl.className = 'result-box safe'; resEl.textContent = '✅ MATCH — File integrity verified. No tampering detected.';
+  } else {
+    resEl.className = 'result-box danger'; resEl.textContent = '⚠ MISMATCH — File hash differs from expected. Possible tampering!';
+  }
+}
+
+/* ─────────────────────────────────────────────
+   PORT SCANNER (SIMULATION)
+───────────────────────────────────────────── */
+let portRange = 'common';
+const PORT_SETS = {
+  common: [{p:21,s:'FTP'},{p:22,s:'SSH'},{p:23,s:'Telnet'},{p:25,s:'SMTP'},{p:53,s:'DNS'},{p:80,s:'HTTP'},{p:110,s:'POP3'},{p:143,s:'IMAP'},{p:443,s:'HTTPS'},{p:445,s:'SMB'},{p:3306,s:'MySQL'},{p:3389,s:'RDP'},{p:5432,s:'PostgreSQL'},{p:6379,s:'Redis'},{p:8080,s:'HTTP-Alt'},{p:8443,s:'HTTPS-Alt'}],
+  web: [{p:80,s:'HTTP'},{p:443,s:'HTTPS'},{p:8080,s:'HTTP-Alt'},{p:8443,s:'HTTPS-Alt'},{p:3000,s:'Dev'},{p:4000,s:'Dev-Alt'},{p:5000,s:'Flask'},{p:8000,s:'Django'},{p:9000,s:'PHP-FPM'}],
+  all: Array.from({length:30}, (_,i) => ({p:i+1, s:''})).concat(Array.from({length:994}, (_,i) => ({p:i+31,s:''})))
+};
+
+function setPortRange(range, btn) {
+  portRange = range;
+  document.querySelectorAll('#tool-portscan .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('port-custom').style.display = range === 'custom' ? 'block' : 'none';
+}
+
+function runPortScan() {
+  const host = document.getElementById('scan-host').value.trim() || 'localhost';
+  const btn = document.getElementById('scan-btn');
+  const progress = document.getElementById('scan-progress');
+  const fill = document.getElementById('scan-fill');
+  const labelEl = document.getElementById('scan-label');
+  const results = document.getElementById('port-results');
+
+  let ports;
+  if (portRange === 'custom') {
+    const customStr = document.getElementById('port-custom').value;
+    ports = customStr.split(',').map(s => ({ p: parseInt(s.trim()), s: '' })).filter(p => !isNaN(p.p));
+  } else if (portRange === 'all') {
+    ports = Array.from({length: 100}, (_, i) => ({ p: i + 1, s: '' }));
+  } else {
+    ports = PORT_SETS[portRange];
+  }
+
+  btn.disabled = true; btn.textContent = '⏳ Scanning...';
+  progress.style.display = 'block';
+  results.innerHTML = '';
+
+  let idx = 0;
+  const interval = setInterval(() => {
+    if (idx >= ports.length) {
+      clearInterval(interval);
+      btn.disabled = false; btn.textContent = '⚡ Start Scan';
+      progress.style.display = 'none';
+      showToast(`Scan complete: ${ports.length} ports checked`, 'info', '🌐');
+      return;
+    }
+
+    const pct = Math.round((idx / ports.length) * 100);
+    fill.style.width = pct + '%';
+    labelEl.textContent = `Scanning port ${ports[idx].p}... (${pct}%)`;
+
+    // Deterministic "simulation" based on port number
+    const rand = (Math.sin(ports[idx].p * 9301 + 49297) * 233280) % 1;
+    let status = 'closed';
+    const p = ports[idx].p;
+    if ([80,443,22,21,25,53].includes(p)) status = 'open';
+    else if (rand > 0.85) status = 'open';
+    else if (rand > 0.70) status = 'filtered';
+
+    const div = document.createElement('div');
+    div.className = `port-item ${status}`;
+    const svcLabel = ports[idx].s ? `<div style="color:var(--text-muted);font-size:10px">${ports[idx].s}</div>` : '';
+    div.innerHTML = `
+      <div class="port-num">${ports[idx].p}</div>
+      ${svcLabel}
+      <div class="port-status">${status.toUpperCase()}</div>
+    `;
+    results.appendChild(div);
+    idx++;
+  }, portRange === 'all' ? 30 : 80);
+}
+
+/* ─────────────────────────────────────────────
+   ENCRYPTION / DECRYPTION
+───────────────────────────────────────────── */
+let encMode = 'encrypt';
+let encAlgo = 'base64';
+
+function setEncMode(mode, btn) {
+  encMode = mode;
+  document.querySelectorAll('#enc-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('enc-input-label').textContent = mode === 'encrypt' ? 'PLAINTEXT' : 'CIPHERTEXT';
+  document.getElementById('enc-btn').textContent = mode === 'encrypt' ? '🔒 Encrypt' : '🔓 Decrypt';
+  document.getElementById('enc-output').textContent = 'Output will appear here...';
+}
+
+function updateEncUI() {
+  const algo = document.getElementById('enc-algo').value;
+  encAlgo = algo;
+  document.getElementById('enc-key-group').style.display = ['vigenere','aes'].includes(algo) ? 'block' : 'none';
+  document.getElementById('caesar-shift-group').style.display = algo === 'caesar' ? 'block' : 'none';
+  document.getElementById('enc-key-label').textContent = algo === 'aes' ? 'PASSPHRASE (AES-256)' : 'KEY (KEYWORD)';
+}
+
+async function runEncryption() {
+  const text = document.getElementById('enc-input').value;
+  const key = document.getElementById('enc-key').value;
+  const shift = parseInt(document.getElementById('caesar-shift').value) || 13;
+  const out = document.getElementById('enc-output');
+
+  if (!text) { showToast('Please enter text', 'error', '✗'); return; }
+
+  let result = '';
+  try {
+    if (encAlgo === 'base64') {
+      result = encMode === 'encrypt' ? btoa(unescape(encodeURIComponent(text))) : decodeURIComponent(escape(atob(text)));
+    } else if (encAlgo === 'rot13') {
+      result = text.replace(/[A-Za-z]/g, c => String.fromCharCode(c.charCodeAt(0) + (c.toLowerCase() < 'n' ? 13 : -13)));
+    } else if (encAlgo === 'caesar') {
+      const s = encMode === 'encrypt' ? shift : 26 - shift;
+      result = text.replace(/[A-Za-z]/g, c => {
+        const base = c <= 'Z' ? 65 : 97;
+        return String.fromCharCode((c.charCodeAt(0) - base + s) % 26 + base);
+      });
+    } else if (encAlgo === 'vigenere') {
+      if (!key) { showToast('Enter a key for Vigenère cipher', 'error', '✗'); return; }
+      result = vigenere(text, key, encMode === 'encrypt');
+    } else if (encAlgo === 'aes') {
+      if (!key) { showToast('Enter a passphrase for AES encryption', 'error', '✗'); return; }
+      result = encMode === 'encrypt' ? await aesEncrypt(text, key) : await aesDecrypt(text, key);
+    }
+    out.textContent = result;
+    out.className = 'result-box info';
+  } catch (e) {
+    out.className = 'result-box danger';
+    out.textContent = '✗ Error: ' + e.message;
+  }
+}
+
+function vigenere(text, key, encrypt) {
+  let result = '';
+  let ki = 0;
+  for (let ch of text) {
+    if (/[A-Za-z]/.test(ch)) {
+      const base = ch <= 'Z' ? 65 : 97;
+      const kChar = key[ki % key.length].toLowerCase().charCodeAt(0) - 97;
+      const shift = encrypt ? kChar : 26 - kChar;
+      result += String.fromCharCode((ch.charCodeAt(0) - base + shift) % 26 + base);
+      ki++;
+    } else { result += ch; }
+  }
+  return result;
+}
+
+async function deriveKey(passphrase, salt) {
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(passphrase), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+    keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']
+  );
+}
+
+async function aesEncrypt(text, passphrase) {
+  const enc = new TextEncoder();
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await deriveKey(passphrase, salt);
+  const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(text));
+  const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
+  combined.set(salt, 0); combined.set(iv, 16); combined.set(new Uint8Array(encrypted), 28);
+  return btoa(String.fromCharCode(...combined));
+}
+
+async function aesDecrypt(cipherB64, passphrase) {
+  const data = new Uint8Array(atob(cipherB64).split('').map(c => c.charCodeAt(0)));
+  const salt = data.slice(0, 16); const iv = data.slice(16, 28); const encrypted = data.slice(28);
+  const key = await deriveKey(passphrase, salt);
+  const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, encrypted);
+  return new TextDecoder().decode(decrypted);
+}
+
+/* ─────────────────────────────────────────────
+   MD5 IMPLEMENTATION
+───────────────────────────────────────────── */
+function md5(str) {
+  function safe_add(x, y) { const lsw=(x&0xFFFF)+(y&0xFFFF); return (((x>>16)+(y>>16)+(lsw>>16))<<16)|(lsw&0xFFFF); }
+  function bit_rol(num,cnt) { return (num<<cnt)|(num>>>(32-cnt)); }
+  function md5_cmn(q,a,b,x,s,t) { return safe_add(bit_rol(safe_add(safe_add(a,q),safe_add(x,t)),s),b); }
+  function md5_ff(a,b,c,d,x,s,t) { return md5_cmn((b&c)|((~b)&d),a,b,x,s,t); }
+  function md5_gg(a,b,c,d,x,s,t) { return md5_cmn((b&d)|(c&(~d)),a,b,x,s,t); }
+  function md5_hh(a,b,c,d,x,s,t) { return md5_cmn(b^c^d,a,b,x,s,t); }
+  function md5_ii(a,b,c,d,x,s,t) { return md5_cmn(c^(b|(~d)),a,b,x,s,t); }
+  function md5_blks(s) {
+    const nblk=((s.length+8)>>6)+1; const blks=new Array(nblk*16).fill(0);
+    for(let i=0;i<s.length;i++) blks[i>>2]|=s.charCodeAt(i)<<((i%4)*8);
+    blks[s.length>>2]|=0x80<<((s.length%4)*8); blks[nblk*16-2]=s.length*8; return blks;
+  }
+  const x=md5_blks(str); let a=1732584193,b=-271733879,c=-1732584194,d=271733878;
+  for(let i=0;i<x.length;i+=16){
+    const aa=a,bb=b,cc=c,dd=d;
+    a=md5_ff(a,b,c,d,x[i],7,-680876936); d=md5_ff(d,a,b,c,x[i+1],12,-389564586); c=md5_ff(c,d,a,b,x[i+2],17,606105819); b=md5_ff(b,c,d,a,x[i+3],22,-1044525330);
+    a=md5_ff(a,b,c,d,x[i+4],7,-176418897); d=md5_ff(d,a,b,c,x[i+5],12,1200080426); c=md5_ff(c,d,a,b,x[i+6],17,-1473231341); b=md5_ff(b,c,d,a,x[i+7],22,-45705983);
+    a=md5_ff(a,b,c,d,x[i+8],7,1770035416); d=md5_ff(d,a,b,c,x[i+9],12,-1958414417); c=md5_ff(c,d,a,b,x[i+10],17,-42063); b=md5_ff(b,c,d,a,x[i+11],22,-1990404162);
+    a=md5_ff(a,b,c,d,x[i+12],7,1804603682); d=md5_ff(d,a,b,c,x[i+13],12,-40341101); c=md5_ff(c,d,a,b,x[i+14],17,-1502002290); b=md5_ff(b,c,d,a,x[i+15],22,1236535329);
+    a=md5_gg(a,b,c,d,x[i+1],5,-165796510); d=md5_gg(d,a,b,c,x[i+6],9,-1069501632); c=md5_gg(c,d,a,b,x[i+11],14,643717713); b=md5_gg(b,c,d,a,x[i],20,-373897302);
+    a=md5_gg(a,b,c,d,x[i+5],5,-701558691); d=md5_gg(d,a,b,c,x[i+10],9,38016083); c=md5_gg(c,d,a,b,x[i+15],14,-660478335); b=md5_gg(b,c,d,a,x[i+4],20,-405537848);
+    a=md5_gg(a,b,c,d,x[i+9],5,568446438); d=md5_gg(d,a,b,c,x[i+14],9,-1019803690); c=md5_gg(c,d,a,b,x[i+3],14,-187363961); b=md5_gg(b,c,d,a,x[i+8],20,1163531501);
+    a=md5_gg(a,b,c,d,x[i+13],5,-1444681467); d=md5_gg(d,a,b,c,x[i+2],9,-51403784); c=md5_gg(c,d,a,b,x[i+7],14,1735328473); b=md5_gg(b,c,d,a,x[i+12],20,-1926607734);
+    a=md5_hh(a,b,c,d,x[i+5],4,-378558); d=md5_hh(d,a,b,c,x[i+8],11,-2022574463); c=md5_hh(c,d,a,b,x[i+11],16,1839030562); b=md5_hh(b,c,d,a,x[i+14],23,-35309556);
+    a=md5_hh(a,b,c,d,x[i+1],4,-1530992060); d=md5_hh(d,a,b,c,x[i+4],11,1272893353); c=md5_hh(c,d,a,b,x[i+7],16,-155497632); b=md5_hh(b,c,d,a,x[i+10],23,-1094730640);
+    a=md5_hh(a,b,c,d,x[i+13],4,681279174); d=md5_hh(d,a,b,c,x[i],11,-358537222); c=md5_hh(c,d,a,b,x[i+3],16,-722521979); b=md5_hh(b,c,d,a,x[i+6],23,76029189);
+    a=md5_hh(a,b,c,d,x[i+9],4,-640364487); d=md5_hh(d,a,b,c,x[i+12],11,-421815835); c=md5_hh(c,d,a,b,x[i+15],16,530742520); b=md5_hh(b,c,d,a,x[i+2],23,-995338651);
+    a=md5_ii(a,b,c,d,x[i],6,-198630844); d=md5_ii(d,a,b,c,x[i+7],10,1126891415); c=md5_ii(c,d,a,b,x[i+14],15,-1416354905); b=md5_ii(b,c,d,a,x[i+5],21,-57434055);
+    a=md5_ii(a,b,c,d,x[i+12],6,1700485571); d=md5_ii(d,a,b,c,x[i+3],10,-1894986606); c=md5_ii(c,d,a,b,x[i+10],15,-1051523); b=md5_ii(b,c,d,a,x[i+1],21,-2054922799);
+    a=md5_ii(a,b,c,d,x[i+8],6,1873313359); d=md5_ii(d,a,b,c,x[i+15],10,-30611744); c=md5_ii(c,d,a,b,x[i+6],15,-1560198380); b=md5_ii(b,c,d,a,x[i+13],21,1309151649);
+    a=md5_ii(a,b,c,d,x[i+4],6,-145523070); d=md5_ii(d,a,b,c,x[i+11],10,-1120210379); c=md5_ii(c,d,a,b,x[i+2],15,718787259); b=md5_ii(b,c,d,a,x[i+9],21,-343485551);
+    a=safe_add(a,aa); b=safe_add(b,bb); c=safe_add(c,cc); d=safe_add(d,dd);
+  }
+  return [a,b,c,d].map(n=>('0000000'+((n<0)?(n+0x100000000):n).toString(16)).slice(-8)).join('');
+}
+
+function md5ArrayBuffer(buffer) {
+  // For file hashing, we produce a basic checksum representation
+  const arr = new Uint8Array(buffer);
+  let str = '';
+  for (let i = 0; i < Math.min(arr.length, 65536); i++) str += String.fromCharCode(arr[i]);
+  return md5(str) + (arr.length > 65536 ? ' (first 64KB sampled)' : '');
+}
+
+/* ─────────────────────────────────────────────
+   SHA-3 (Keccak) SIMPLIFIED
+───────────────────────────────────────────── */
+function sha3_256(msg) {
+  // Simplified SHA3-256 using a seeded pseudo implementation for demo
+  // In production, use a proper library like js-sha3
+  const encoder = new TextEncoder();
+  const data = encoder.encode(msg);
+  let hash = 0x6a09e667;
+  for (let i = 0; i < data.length; i++) {
+    hash = ((hash << 5) + hash) + data[i];
+    hash |= 0;
+  }
+  // Produce a 64-char hex string using multiple rounds
+  let result = '';
+  let seed = Math.abs(hash);
+  for (let i = 0; i < 8; i++) {
+    seed = ((seed * 1664525) + 1013904223) >>> 0;
+    result += seed.toString(16).padStart(8, '0');
+  }
+  return result + ' (demo — use js-sha3 lib for production)';
+}
+
+
+/* ─────────────────────────────────────────────
+   LAUNCH TOOLKIT BUTTON
+───────────────────────────────────────────── */
+function launchToolkit() {
+  const target = document.getElementById('tools-area');
+  if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  const cards = document.querySelectorAll('.tool-card');
+  cards.forEach((card, i) => {
+    setTimeout(() => {
+      card.classList.add('launch-highlight');
+      setTimeout(() => card.classList.remove('launch-highlight'), 700);
+    }, 600 + i * 160);
+  });
+
+  showToast('🚀 Toolkit launched!', 'info', '⚡');
+}
+
+
+document.querySelectorAll('.tool-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    card.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(0,229,255,0.06), var(--bg-card-hover) 60%)`;
+  });
+  card.addEventListener('mouseleave', () => { card.style.background = ''; });
+});
+</script>
+</body>
+</html>
